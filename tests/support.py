@@ -7,7 +7,7 @@ class BaseVMProfTest(object):
         self.pypy = setup_local_pypy(version='latest')
         self.vmprofargs = "--web --web-url %s" % self.vmprof_url
 
-    def pypy_exec(self, *args, jitlog=False, upload=True):
+    def pypy_exec(self, *args, jitlog=False, upload=False):
         params = ['-m', 'vmprof']
         if upload:
             params += ['--web', '--web-url', self.vmprof_url]

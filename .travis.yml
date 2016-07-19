@@ -21,7 +21,7 @@ before_script:
   - sudo mv chromedriver /usr/bin
 
 script:
-  - py.test tests/ -v
+  - py.test testvmprof -v
 
 notifications:
   irc:

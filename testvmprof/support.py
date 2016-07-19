@@ -36,12 +36,19 @@ def setup_local_pypy(version='latest', dist='linux64'):
     tmp = tempfile.mkdtemp()
     download_pypy(os.path.join(tmp, filename), version, dist)
     subprocess.run(["tar", "xf", os.path.join(tmp, filename)], cwd=tmp)
+    executable = None
     for root, dirs, files in os.walk(tmp):
         for dir in dirs:
             if dir.startswith("pypy-c"):
-                return tmp, os.path.join(dir, "bin", "pypy")
-    assert(False, "could not setup local pypy")
-    return None
+                executable = os.path.join(dir, "bin", "pypy")
+                break
+    else:
+        assert(False, "could not setup local pypy")
+    absexe = os.path.join(tmp, executable)
+    # poor man's dependency resolution
+    subprocess.run(["virtualenv", "-p", absexe, "pypy-env"], cwd=tmp)
+    subprocess.run(["pypy-env/bin/pip", "install", "--pre", "vmprof"], cwd=tmp)
+    return tmp, os.path.join("pypy-env","bin","python")
 
 def download_pypy(path, version='latest', dist='linux64'):
     link = "http://buildbot.pypy.org/nightly/default/pypy-c-jit-{}-{}.tar.bz2".format(version, dist)

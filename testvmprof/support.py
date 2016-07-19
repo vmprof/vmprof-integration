@@ -1,7 +1,7 @@
 import requests
 import shutil
 import tempfile
-from subprocess import run
+import subprocess
 import os
 
 class BaseVMProfTest(object):
@@ -20,17 +20,22 @@ class BaseVMProfTest(object):
         return self.shell_exec(self.pypy, *params, *args)
 
     def shell_exec(self, *args):
-        ro = run(args, cwd=self.tmp)
-        assert(ro.returncode == 0, "command: %s. returned %d" % \
-                                         (' '.join(args), ro.returncode))
-        return ro
+        proc = subprocess.Popen(args, cwd=self.tmp,
+                                stderr=subprocess.STDOUT)
+        try:
+            outs, err = proc.communicate(timeout=15)
+        except TimeoutExpired:
+            proc.kill()
+            raise AssertionError("command: %s. failed %d" % \
+                    (' '.join(args), ro.returncode))
+        return outs, err, proc.returncode
 
 def setup_local_pypy(version='latest', dist='linux64'):
     # uff, hardcoded paths & only for linux
     filename = "pypy.tar.bz2"
     tmp = tempfile.mkdtemp()
     download_pypy(os.path.join(tmp, filename), version, dist)
-    run(["tar", "xf", os.path.join(tmp, filename)], cwd=tmp)
+    subprocess.run(["tar", "xf", os.path.join(tmp, filename)], cwd=tmp)
     for root, dirs, files in os.walk(tmp):
         for dir in dirs:
             if dir.startswith("pypy-c"):
@@ -48,3 +53,13 @@ def download_pypy(path, version='latest', dist='linux64'):
             return
 
     raise Exception("cannot download pypy!")
+
+def output_extract_urls(output):
+    found = {}
+    for line in output.splitlines():
+        if line.startswith("VMProf log: "):
+            found['profile'] = line[12:]
+        if line.startswith("PyPy JIT log: "):
+            found['jitlog'] = line[14:]
+    return found
+

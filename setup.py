@@ -1,17 +1,20 @@
 from setuptools import setup, find_packages, Extension
 import os, sys
 
+pkgs = find_packages('testvmprof', exclude=('tests.*'))
+
 setup(
     name='vmprof-integration',
     author='vmprof team',
-    author_email='fijal@baroquesoftware.com',
+    author_email='planrichi@gmail.com',
     version="0.0.1.dev0",
-    packages=find_packages(),
+    packages=pkgs,
     description="VMProf's integration tests",
     long_description='See https://vmprof.readthedocs.org/',
     url='https://github.com/vmprof/vmprof-integration',
     install_requires=[
         'requests',
+        'selenium'
     ],
     tests_require=['pytest'],
     classifiers=[

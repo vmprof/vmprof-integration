@@ -17,7 +17,8 @@ class BaseVMProfTest(object):
             params += ['--web', '--web-url', self.vmprof_url]
         if jitlog:
             params += ['--jitlog']
-        return self.shell_exec(self.pypy, *params, *args)
+        return self.shell_exec(self.pypy, "testvmprof/test/examples/invoke_in_env.py" ,
+                               "--", *params, *args)
 
     def shell_exec(self, *args):
         proc = subprocess.Popen(args, cwd=self.tmp,

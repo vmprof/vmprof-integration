@@ -44,13 +44,14 @@ def setup_local_pypy(version='latest', dist='linux64'):
         download_pypy(os.path.join(tmp, filename), version, dist)
         subprocess.run(["tar", "xf", os.path.join(tmp, filename)], cwd=tmp)
         executable = None
+        found = False
         for root, dirs, files in os.walk(tmp):
             for dir in dirs:
-                print(dir, files)
                 if dir.startswith("pypy-c"):
                     executable = os.path.join(dir, "bin", "pypy")
+                    found = True
                     break
-        else:
+        if not found:
             raise AssertionError("could not setup local pypy")
     else:
         executable = os.environ["TEST_PYPY_EXEC"]

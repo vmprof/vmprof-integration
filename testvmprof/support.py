@@ -46,6 +46,7 @@ def setup_local_pypy(version='latest', dist='linux64'):
         executable = None
         for root, dirs, files in os.walk(tmp):
             for dir in dirs:
+                print(dir, files)
                 if dir.startswith("pypy-c"):
                     executable = os.path.join(dir, "bin", "pypy")
                     break

@@ -11,17 +11,20 @@ class BaseVMProfTest(object):
         self.pypy = os.path.join(tmp, pypy)
         self.vmprofargs = "--web --web-url %s" % self.vmprof_url
 
-    def pypy_exec(self, *args, jitlog=False, upload=False):
+    def pypy_exec(self, *args, cwd=None, jitlog=False, upload=False):
         params = ['-m', 'vmprof']
         if upload:
             params += ['--web', '--web-url', self.vmprof_url]
         if jitlog:
             params += ['--jitlog']
         return self.shell_exec(self.pypy, "testvmprof/test/examples/invoke_in_env.py" ,
-                               "--", *params, *args)
+                               self.tmp, "--", *params, *args, cwd=cwd)
 
-    def shell_exec(self, *args):
-        proc = subprocess.Popen(args, cwd=self.tmp,
+    def shell_exec(self, *args, cwd=None):
+        if cwd == None:
+            cwd = os.getcwd()
+        print("shexe> %s (pwd: %s)" % (' '.join(args), os.getcwd()))
+        proc = subprocess.Popen(args, cwd=cwd,
                                 stderr=subprocess.STDOUT)
         try:
             outs, err = proc.communicate(timeout=15)

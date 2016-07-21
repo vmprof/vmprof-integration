@@ -34,6 +34,8 @@ class BaseVMProfTest(object):
             proc.kill()
             raise AssertionError("command: %s. failed %d" % \
                     (' '.join(args), ro.returncode))
+        assert proc.returncode == 0, \
+            "err\n%s\n\nout\n%s\n" % (err.decode(), outs.decode())
         return outs, err, proc.returncode
 
 def setup_local_pypy(version='latest', dist='linux64'):

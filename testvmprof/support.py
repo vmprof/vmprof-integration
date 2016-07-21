@@ -12,12 +12,13 @@ class BaseVMProfTest(object):
         self.vmprofargs = "--web --web-url %s" % self.vmprof_url
 
     def pypy_exec(self, *args, cwd=None, jitlog=False, upload=False):
-        params = ['-m', 'vmprof']
+        script = args[0] 
+        params = []
         if upload:
             params += ['--web', '--web-url', self.vmprof_url]
         if jitlog:
             params += ['--jitlog']
-        return self.shell_exec(self.pypy, "testvmprof/test/examples/invoke_in_env.py" ,
+        return self.shell_exec(self.pypy, "testvmprof/test/examples/boot_env.py" ,
                                self.tmp, "--", *params, *args, cwd=cwd)
 
     def shell_exec(self, *args, cwd=None):
@@ -25,10 +26,11 @@ class BaseVMProfTest(object):
             cwd = os.getcwd()
         print("shexe> %s (pwd: %s)" % (' '.join(args), os.getcwd()))
         proc = subprocess.Popen(args, cwd=cwd,
-                                stderr=subprocess.STDOUT)
+                                stderr=subprocess.PIPE,
+                                stdout=subprocess.PIPE)
         try:
-            outs, err = proc.communicate(timeout=15)
-        except TimeoutExpired:
+            outs, err = proc.communicate(timeout=30)
+        except subprocess.TimeoutExpired:
             proc.kill()
             raise AssertionError("command: %s. failed %d" % \
                     (' '.join(args), ro.returncode))
@@ -38,16 +40,19 @@ def setup_local_pypy(version='latest', dist='linux64'):
     # uff, hardcoded paths & only for linux
     filename = "pypy.tar.bz2"
     tmp = tempfile.mkdtemp()
-    download_pypy(os.path.join(tmp, filename), version, dist)
-    subprocess.run(["tar", "xf", os.path.join(tmp, filename)], cwd=tmp)
-    executable = None
-    for root, dirs, files in os.walk(tmp):
-        for dir in dirs:
-            if dir.startswith("pypy-c"):
-                executable = os.path.join(dir, "bin", "pypy")
-                break
+    if "TEST_PYPY_EXEC" not in os.environ:
+        download_pypy(os.path.join(tmp, filename), version, dist)
+        subprocess.run(["tar", "xf", os.path.join(tmp, filename)], cwd=tmp)
+        executable = None
+        for root, dirs, files in os.walk(tmp):
+            for dir in dirs:
+                if dir.startswith("pypy-c"):
+                    executable = os.path.join(dir, "bin", "pypy")
+                    break
+        else:
+            raise AssertionError("could not setup local pypy")
     else:
-        assert(False, "could not setup local pypy")
+        executable = os.environ["TEST_PYPY_EXEC"]
     absexe = os.path.join(tmp, executable)
     # poor man's dependency resolution
     subprocess.run(["virtualenv", "-p", absexe, "pypy-env"], cwd=tmp)

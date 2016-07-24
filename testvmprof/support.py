@@ -43,7 +43,7 @@ def setup_local_pypy(branch='default', version='latest', dist='linux64'):
     filename = "pypy.tar.bz2"
     tmp = tempfile.mkdtemp()
     if "TEST_PYPY_EXEC" not in os.environ:
-        download_pypy(branch, os.path.join(tmp, filename), version, dist)
+        download_pypy(os.path.join(tmp, filename), branch, version, dist)
         subprocess.run(["tar", "xf", os.path.join(tmp, filename)], cwd=tmp)
         executable = None
         found = False
@@ -65,6 +65,7 @@ def setup_local_pypy(branch='default', version='latest', dist='linux64'):
 
 def download_pypy(path, branch, version, dist):
     link = "http://buildbot.pypy.org/nightly/{}/pypy-c-jit-{}-{}.tar.bz2".format(branch, version, dist)
+    print("downloading", link)
     r = requests.get(link, stream=True)
     if r.status_code == 200:
         with open(path, 'wb') as f:

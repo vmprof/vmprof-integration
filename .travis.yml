@@ -25,6 +25,7 @@ before_script:
   - unzip chromedriver_linux64.zip
   - sudo mv chromedriver /usr/bin
   - git clone git://github.com/vmprof/vmprof-server.git
+  - pip install -r vmprof-server/requirements/vmprof-server/testing.txt
   - python vmprof-server/manage.py migrate
   - python vmprof-server/vmlog/test/data/loggen.py
   - python vmprof-server/manage.py loaddata vmlog/test/fixtures.yaml

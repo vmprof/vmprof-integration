@@ -28,7 +28,7 @@ before_script:
   - pip install -r vmprof-server/requirements/testing.txt
   - python vmprof-server/manage.py migrate
   - python vmprof-server/vmlog/test/data/loggen.py
-  - python vmprof-server/manage.py loaddata vmlog/test/fixtures.yaml
+  - python vmprof-server/manage.py loaddata vmprof-server/vmlog/test/fixtures.yaml
   - python vmprof-server/manage.py runserver -v 3 &
   - sleep 3 # wait for django
 

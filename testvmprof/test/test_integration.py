@@ -31,9 +31,9 @@ class VMProfTest(BaseVMProfTest):
             assert link_count == 4
 
 
-class TestProduction(VMProfTest):
-    vmprof_url = "http://vmprof.com"
+#class TestProduction(VMProfTest):
+#    vmprof_url = "http://vmprof.com"
 
-#class TestLocal(VMProfTest):
-#    vmprof_url = "http://localhost:8000"
+class TestLocal(VMProfTest):
+    vmprof_url = "http://localhost:8000"
 

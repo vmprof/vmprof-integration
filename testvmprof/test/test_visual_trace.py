@@ -3,8 +3,8 @@ from selenium import webdriver
 import selenium.webdriver as webdriver
 import selenium.webdriver.support.ui as ui
 
-from vmlog.test.e2e.test_traces import (query1, query,
-        reset_search_criteria, select_trace_entry, _url)
+from testvmprof.ui import (query1, query,
+        reset_search_criteria, select_trace_entry, local_url)
 
 class TestTracesView(object):
     pass

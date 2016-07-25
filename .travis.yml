@@ -25,11 +25,11 @@ before_script:
   - unzip chromedriver_linux64.zip
   - sudo mv chromedriver /usr/bin
   - git clone git://github.com/vmprof/vmprof-server.git
-  - pip install -r vmprof-server/requirements/testing.txt
-  - python vmprof-server/manage.py migrate
-  - python vmprof-server/vmlog/test/data/loggen.py
+  - cd vmprof-server && pip install -r requirements/testing.txt
+  - cd vmprof-server && python manage.py migrate
+  - cd vmprof-server && python vmlog/test/data/loggen.py
   - cd vmprof-server && python manage.py loaddata vmlog/test/fixtures.yaml
-  - python vmprof-server/manage.py runserver -v 3 &
+  - cd vmprof-server && python manage.py runserver -v 3 &
   - sleep 3 # wait for django
 
 script:

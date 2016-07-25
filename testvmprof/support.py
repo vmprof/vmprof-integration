@@ -6,7 +6,7 @@ import os
 
 class BaseVMProfTest(object):
     def setup_class(self):
-        tmp, pypy = setup_local_pypy(branch='default', version='latest')
+        tmp, pypy = setup_local_pypy()
         self.tmp = tmp
         self.pypy = os.path.join(tmp, pypy)
         self.vmprofargs = "--web --web-url %s" % self.vmprof_url
@@ -38,7 +38,7 @@ class BaseVMProfTest(object):
             "err\n%s\n\nout\n%s\n" % (err.decode(), outs.decode())
         return outs, err, proc.returncode
 
-def setup_local_pypy(branch='default', version='latest', dist='linux64'):
+def setup_local_pypy(branch='trunk', version='latest', dist='linux64'):
     # uff, hardcoded paths & only for linux
     filename = "pypy.tar.bz2"
     tmp = tempfile.mkdtemp()

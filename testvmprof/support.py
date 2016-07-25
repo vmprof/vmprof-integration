@@ -6,7 +6,7 @@ import os
 
 class BaseVMProfTest(object):
     def setup_class(self):
-        tmp, pypy = setup_local_pypy(branch='new-jit-log', version='latest')
+        tmp, pypy = setup_local_pypy(branch='default', version='latest')
         self.tmp = tmp
         self.pypy = os.path.join(tmp, pypy)
         self.vmprofargs = "--web --web-url %s" % self.vmprof_url

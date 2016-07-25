@@ -8,6 +8,7 @@ class VMProfTest(BaseVMProfTest):
     vmprof_url = None
     def test_run_vm_and_upload(self, drivers):
         out, err, retcode = self.pypy_exec("testvmprof/test/examples/simple_loop.py", jitlog=True, upload=True)
+        print(out,"\n",err)
         url = output_extract_urls(err.decode())['jitlog']
 
         for dri in drivers:

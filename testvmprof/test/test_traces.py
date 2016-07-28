@@ -94,3 +94,16 @@ class TestTracesView(object):
             for line in query(driver, ".trace-asm-line > div"):
                 asm.append(line.text.strip())
             assert asm == ["nop"] * 3
+
+    def test_powerpc_asm(self, drivers):
+        for driver in drivers:
+            wait = ui.WebDriverWait(driver,10)
+            driver.get(local_url("#/ppc64lev1/traces"))
+            wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
+            select_trace_entry(driver, wait, "ppcloop")
+            #
+            query1(driver, "#switch_trace_asm").click()
+            asm = []
+            for line in query(driver, ".trace-asm-line > div"):
+                asm.append(line.text.strip())
+            assert asm == ["ld r9, 0x10(r6)", "std r9, 0x10(r6)"]

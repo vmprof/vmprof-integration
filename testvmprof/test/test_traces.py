@@ -9,7 +9,7 @@ class TestTracesView(object):
     def test_display_schedule(self, drivers):
         for driver in drivers:
             wait = ui.WebDriverWait(driver,10)
-            driver.get(local_url("#/1111/traces"))
+            driver.get(local_url("#/richards/traces"))
             wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
 
             # will blow up if not present
@@ -18,7 +18,7 @@ class TestTracesView(object):
     def test_filter_checkboxes(self, drivers):
         for driver in drivers:
             wait = ui.WebDriverWait(driver,20)
-            driver.get(local_url("#/1111/traces"))
+            driver.get(local_url("#/richards/traces"))
             wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
             for elem in driver.find_elements_by_css_selector('li.trace-entry span.trace-name'):
                 if 'schedule' in elem.text:

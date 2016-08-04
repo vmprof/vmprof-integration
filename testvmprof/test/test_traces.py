@@ -115,7 +115,10 @@ class TestTracesView(object):
             wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
             select_trace_entry(driver, wait, "func_opcode_and_dup_merge_points")
             query1(driver, "#switch_trace_opt").click()
-            query1(driver, "#show_source_code").click()
+
+            # enable source code show
+            while not query1(driver, "input#show_source_code").is_selected():
+                query1(driver, "#show_source_code").click()
             names = []
             for elem in query(driver, "code.trace-source > pre"):
                 names.append(elem.text.strip())
@@ -126,6 +129,16 @@ class TestTracesView(object):
             assert 'yield 13' in names
             assert 'a,b,c = call.me(1,2,3) # here is a comment' in names
 
+            # disable source code show
+            while query1(driver, "input#show_source_code").is_selected():
+                query1(driver, "#show_source_code").click()
+
+            names = []
+            for elem in query(driver, "code.trace-source > pre"):
+                names.append(elem.text.strip())
+            # assert empty
+            assert names == []
+
     def test_display_bytecode(self, drivers):
         for driver in drivers:
             wait = ui.WebDriverWait(driver,10)
@@ -133,11 +146,19 @@ class TestTracesView(object):
             wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
             select_trace_entry(driver, wait, "func_opcode_and_dup_merge_points")
             query1(driver, "#switch_trace_opt").click()
-            query1(driver, "#show_bytecodes").click()
+            while not query1(driver, "input#show_bytecodes").is_selected():
+                query1(driver, "#show_bytecodes").click()
             bytecodes = []
             for elem in query(driver, "code.trace-bytecode > pre"):
                 bytecodes.append(elem.text.strip())
-            # assert no duplicate
             assert bytecodes == ['LOAD_FAST', 'LOAD_FAST', 'LOAD_FAST', \
                                  'INT_ADD', 'STORE_FAST', 'LOAD_FAST', \
                                  'YIELD', 'YIELD2', 'CALL']
+
+            while query1(driver, "input#show_bytecodes").is_selected():
+                query1(driver, "#show_bytecodes").click()
+            bytecodes = []
+            for elem in query(driver, "code.trace-bytecode > pre"):
+                bytecodes.append(elem.text.strip())
+            # there should not be any byte code!
+            assert bytecodes == []

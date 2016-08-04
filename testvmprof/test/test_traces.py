@@ -107,3 +107,21 @@ class TestTracesView(object):
             for line in query(driver, ".trace-asm-line > div"):
                 asm.append(line.text.strip())
             assert asm == ["ld r9, 0x10(r6)", "std r9, 0x10(r6)"]
+
+    def test_no_merge_point_source_duplication(self, drivers):
+        for driver in drivers:
+            wait = ui.WebDriverWait(driver,10)
+            driver.get(local_url("#/1v1/traces"))
+            wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
+            select_trace_entry(driver, wait, "func_opcode_and_dup_merge_points")
+            query1(driver, "#switch_trace_opt").click()
+            query1(driver, "#show_source_code").click()
+            names = []
+            for elem in query(driver, "code.trace-source > pre"):
+                names.append(elem.text.strip())
+            # assert no duplicate
+            assert len(names) == len(set(names))
+            assert 'a = b + c' in names
+            assert 'def wait_for_me():' in names
+            assert 'yield 13' in names
+            assert 'a,b,c = call.me(1,2,3) # here is a comment' in names

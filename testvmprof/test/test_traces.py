@@ -125,3 +125,19 @@ class TestTracesView(object):
             assert 'def wait_for_me():' in names
             assert 'yield 13' in names
             assert 'a,b,c = call.me(1,2,3) # here is a comment' in names
+
+    def test_display_bytecode(self, drivers):
+        for driver in drivers:
+            wait = ui.WebDriverWait(driver,10)
+            driver.get(local_url("#/1v1/traces"))
+            wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
+            select_trace_entry(driver, wait, "func_opcode_and_dup_merge_points")
+            query1(driver, "#switch_trace_opt").click()
+            query1(driver, "#show_bytecodes").click()
+            bytecodes = []
+            for elem in query(driver, "code.trace-bytecode > pre"):
+                bytecodes.append(elem.text.strip())
+            # assert no duplicate
+            assert bytecodes == ['LOAD_FAST', 'LOAD_FAST', 'LOAD_FAST', \
+                                 'INT_ADD', 'STORE_FAST', 'LOAD_FAST', \
+                                 'YIELD', 'YIELD2', 'CALL']

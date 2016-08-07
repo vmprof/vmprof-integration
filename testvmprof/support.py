@@ -11,15 +11,29 @@ class BaseVMProfTest(object):
         self.pypy = os.path.join(tmp, pypy)
         self.vmprofargs = "--web --web-url %s" % self.vmprof_url
 
-    def pypy_exec(self, *args, cwd=None, jitlog=False, upload=False):
+    def vmprof_exec(self, *args, cwd=None, jitlog=False, web=False, output=None):
         script = args[0] 
         params = []
-        if upload:
+        if web:
             params += ['--web', '--web-url', self.vmprof_url]
         if jitlog:
             params += ['--jitlog']
+        if output:
+            params += ['-o', output]
         return self.shell_exec(self.pypy, "testvmprof/test/examples/boot_env.py" ,
-                               self.tmp, "--", *params, *args, cwd=cwd)
+                               self.tmp, "vmprof", "--", *params, *args, cwd=cwd)
+
+    def jitlog_exec(self, *args, cwd=None, web=False, upload=None, output=None):
+        script = args[0] 
+        params = []
+        if web:
+            params += ['--web', '--web-url', self.vmprof_url]
+        if output:
+            params += ['-o', output]
+        if upload:
+            params += ['--upload', '--web-url', self.vmprof_url]
+        return self.shell_exec(self.pypy, "testvmprof/test/examples/boot_env.py" ,
+                               self.tmp, "jitlog", "--", *params, *args, cwd=cwd)
 
     def shell_exec(self, *args, cwd=None):
         if cwd == None:
@@ -60,7 +74,7 @@ def setup_local_pypy(branch='trunk', version='latest', dist='linux64'):
         absexe = executable = os.environ["TEST_PYPY_EXEC"]
     # poor man's dependency resolution
     subprocess.run(["virtualenv", "-p", absexe, "pypy-env"], cwd=tmp)
-    subprocess.run(["pypy-env/bin/pip", "install", "--pre", "vmprof"], cwd=tmp)
+    subprocess.run(["pypy-env/bin/pip", "install", "--no-cache-dir", "--pre", "vmprof"], cwd=tmp)
     return tmp, os.path.join("pypy-env","bin","python")
 
 def download_pypy(path, branch, version, dist):

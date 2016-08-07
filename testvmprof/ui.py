@@ -2,10 +2,13 @@
 import pytest
 from selenium import webdriver
 import selenium.webdriver.support.ui as ui
+import os
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def drivers(request):
     drivers = [webdriver.Chrome()]
+    if os.environ.get('TRAVIS', 'false') == 'true':
+        drivers += [webdriver.Firefox()]
     for dri in drivers:
         dri.wait = ui.WebDriverWait(dri,10)
         request.addfinalizer(dri.quit)

@@ -162,3 +162,28 @@ class TestTracesView(object):
                 bytecodes.append(elem.text.strip())
             # there should not be any byte code!
             assert bytecodes == []
+
+    def test_display_bytecode(self, drivers):
+        for dri in drivers:
+            dri.get(local_url("#/sorted-v2/traces"))
+            wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
+
+            def extract_names():
+                names = []
+                for elem in query(dri, ".trace-entry"):
+                    name = query1(elem, '.trace-name')
+                    names.append(name.text.strip())
+                return names
+            #
+            query1(dri, '#sort_count').click()
+            names = extract_names()
+            assert names == ['c order 1', 'b order 3', 'a order 2']
+
+            query1(dri, '#sort_name').click()
+            names = extract_names()
+            assert names == ['a order 2', 'b order 3', 'c order 1']
+
+            query1(dri, '#sort_recording').click()
+            names = extract_names()
+            assert names == ['b order 3', 'a order 2', 'c order 1']
+

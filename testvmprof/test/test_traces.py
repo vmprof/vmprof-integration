@@ -163,10 +163,10 @@ class TestTracesView(object):
             # there should not be any byte code!
             assert bytecodes == []
 
-    def test_display_bytecode(self, drivers):
+    def test_sort_traces(self, drivers):
         for dri in drivers:
-            dri.get(local_url("#/sorted-v2/traces"))
-            wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
+            dri.get(local_url("#/sorting-v2/traces"))
+            dri.wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
 
             def extract_names():
                 names = []

@@ -187,3 +187,10 @@ class TestTracesView(object):
             names = extract_names()
             assert names == ['b order 3', 'a order 2', 'c order 1']
 
+    def test_error_loading_nonexistent_trace(self, drivers):
+        for dri in drivers:
+            dri.get(local_url("#/non-existent-trace/traces"))
+            dri.wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
+
+            query1(dri, '#error').is_displayed()
+            assert '404 Not Found' in query1(dri, '#error').text

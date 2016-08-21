@@ -4,13 +4,7 @@ import tempfile
 import subprocess
 import os
 
-class BaseVMProfTest(object):
-    def setup_class(self):
-        tmp, pypy = setup_local_pypy()
-        self.tmp = tmp
-        self.pypy = os.path.join(tmp, pypy)
-        self.vmprofargs = "--web --web-url %s" % self.vmprof_url
-
+class VMProfTest(object):
     def vmprof_exec(self, *args, cwd=None, jitlog=False, web=False, output=None):
         script = args[0] 
         params = []
@@ -20,20 +14,9 @@ class BaseVMProfTest(object):
             params += ['--jitlog']
         if output:
             params += ['-o', output]
-        return self.shell_exec(self.pypy, "testvmprof/test/examples/boot_env.py" ,
-                               self.tmp, "vmprof", "--", *params, *args, cwd=cwd)
-
-    def jitlog_exec(self, *args, cwd=None, web=False, upload=None, output=None):
-        script = args[0] 
-        params = []
-        if web:
-            params += ['--web', '--web-url', self.vmprof_url]
-        if output:
-            params += ['-o', output]
-        if upload:
-            params += ['--upload', '--web-url', self.vmprof_url]
-        return self.shell_exec(self.pypy, "testvmprof/test/examples/boot_env.py" ,
-                               self.tmp, "jitlog", "--", *params, *args, cwd=cwd)
+        return self.shell_exec(self.interp, "testvmprof/test/examples/boot_env.py" ,
+                               self.tmp + "/" + self.interpname + "-env/bin/activate_this.py",
+                               "vmprof", "--", *params, *args, cwd=cwd)
 
     def shell_exec(self, *args, cwd=None):
         if cwd == None:
@@ -51,6 +34,44 @@ class BaseVMProfTest(object):
         assert proc.returncode == 0, \
             "err\n%s\n\nout\n%s\n" % (err.decode(), outs.decode())
         return outs, err, proc.returncode
+
+
+class VMProfCPythonTest(VMProfTest):
+    def setup_class(self):
+        tmp, cpython = setup_local_cpython()
+        self.tmp = tmp
+        self.interp = os.path.join(tmp, cpython)
+        self.interpname = 'cpython'
+        self.vmprofargs = "--web --web-url %s" % self.vmprof_url
+
+class VMProfPyPyTest(VMProfTest):
+    def setup_class(self):
+        tmp, pypy = setup_local_pypy()
+        self.tmp = tmp
+        self.interp = os.path.join(tmp, pypy)
+        self.interpname = 'pypy'
+        self.vmprofargs = "--web --web-url %s" % self.vmprof_url
+
+    def jitlog_exec(self, *args, cwd=None, web=False, upload=None, output=None):
+        script = args[0] 
+        params = []
+        if web:
+            params += ['--web', '--web-url', self.vmprof_url]
+        if output:
+            params += ['-o', output]
+        if upload:
+            params += ['--upload', '--web-url', self.vmprof_url]
+        return self.shell_exec(self.interp, "testvmprof/test/examples/boot_env.py" ,
+                               self.tmp + "/" + self.interpname + "-env/bin/activate_this.py",
+                               "jitlog", "--", *params, *args, cwd=cwd)
+
+def setup_local_cpython():
+    tmp = tempfile.mkdtemp()
+    absexe = "/usr/bin/python"
+    subprocess.run(["virtualenv", "-p", absexe, "cpython-env"], cwd=tmp)
+    subprocess.run(["cpython-env/bin/pip", "install", "--no-cache-dir", "--pre", "vmprof"], cwd=tmp)
+    return tmp, os.path.join("cpython-env","bin","python")
+
 
 def setup_local_pypy(branch='trunk', version='latest', dist='linux64'):
     # uff, hardcoded paths & only for linux

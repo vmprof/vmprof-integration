@@ -5,7 +5,7 @@ import os
 path = sys.argv[1]
 assert(sys.argv[3] == "--")
 
-activate_this_file = os.path.join(path, "pypy-env/bin/activate_this.py")
+activate_this_file = path # os.path.join(path, "pypy-env/bin/activate_this.py")
 execfile(activate_this_file, dict(__file__=activate_this_file))
 
 mod = sys.argv[2]

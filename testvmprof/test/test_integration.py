@@ -1,7 +1,7 @@
 from testvmprof.ui import (drivers, query1, query,
         reset_search_criteria, select_trace_entry,
-        wait_until_loading_complete)
-from testvmprof.support import (BaseVMProfTest,
+        wait_until_loading_complete, local_url)
+from testvmprof.support import (VMProfCPythonTest, VMProfPyPyTest,
         output_extract_urls)
 
 def examine_simple_loop(drivers, url):
@@ -25,7 +25,7 @@ def examine_simple_loop(drivers, url):
             link_count += 1
         assert link_count == 4
 
-class VMProfTest(BaseVMProfTest):
+class BaseVMProfPyPyTest(VMProfPyPyTest):
     vmprof_url = None
     def test_run_vm_and_upload(self, drivers):
         out, err, retcode = self.vmprof_exec("testvmprof/test/examples/simple_loop.py",
@@ -43,9 +43,31 @@ class VMProfTest(BaseVMProfTest):
         url = output_extract_urls(err.decode())['jitlog']
         examine_simple_loop(drivers, url)
 
+    def test_display_interp_pypy(self, drivers):
+        self.vmprof_exec("testvmprof/test/examples/simple_loop.py", web=True)
+        for dri in drivers:
+            dri.get(local_url("#"))
+            dri.wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
+
+            names = [elem.text for elem in query(dri, '.media .vm-name')]
+            assert names[0] == 'pypy'
+
+class BaseVMProfCPythonTest(VMProfCPythonTest):
+    def test_display_interp_cpython(self, drivers):
+        self.vmprof_exec("testvmprof/test/examples/simple_loop.py", web=True)
+        for dri in drivers:
+            dri.get(local_url("#"))
+            dri.wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
+
+            names = [elem.text for elem in query(dri, '.media .vm-name')]
+            assert names[0] == 'cpython'
+
 #class TestProduction(VMProfTest):
 #    vmprof_url = "http://vmprof.com"
 
-class TestLocal(VMProfTest):
+class TestLocalPyPy(BaseVMProfPyPyTest):
+    vmprof_url = "http://localhost:8000"
+
+class TestLocalCPython(BaseVMProfCPythonTest):
     vmprof_url = "http://localhost:8000"
 

@@ -192,5 +192,21 @@ class TestTracesView(object):
             dri.get(local_url("#/non-existent-trace/traces"))
             dri.wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
 
-            query1(dri, '#error').is_displayed()
+            assert query1(dri, '#error').is_displayed()
             assert '404 Not Found' in query1(dri, '#error').text
+
+    def test_follow_guard(self, drivers):
+        for dri in drivers:
+            dri.get(local_url("#/1v1/traces"))
+            dri.wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
+
+            select_trace_entry(dri, dri.wait, "unknown")
+            query1(dri, "#switch_trace_rewritten").click()
+            elem = list(query(dri, '.instr'))[1]
+            link = query1(elem, 'a.resop-descr')
+            link.click()
+            dri.wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
+            assert query1(dri, '.parent-failed-guard').text.strip() == 'guard_true(i2) guard_resume'
+            resops = query1(dri, '.resops')
+            # see loggen.py 2 is the number of that bridge
+            assert int(resops.get_attribute("data-trace-id")) == 2

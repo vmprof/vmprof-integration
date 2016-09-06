@@ -1,8 +1,10 @@
+import tempfile
 from testvmprof.ui import (drivers, query1, query,
         reset_search_criteria, select_trace_entry,
         wait_until_loading_complete, local_url)
 from testvmprof.support import (VMProfCPythonTest, VMProfPyPyTest,
         output_extract_urls)
+from os.path import join
 
 def examine_simple_loop(drivers, url):
     for dri in drivers:
@@ -27,6 +29,15 @@ def examine_simple_loop(drivers, url):
 
 class BaseVMProfPyPyTest(VMProfPyPyTest):
     vmprof_url = None
+
+    def setup_class(self):
+        tmp = tempfile.mkdtemp()
+        self.shell_exec(None, "wget", "https://bitbucket.org/pypy/pypy/get/default.tar.bz2", cwd=tmp)
+        self.shell_exec(None, "tar", "xf", "default.tar.bz2", cwd=tmp)
+        self.shell_exec(None, "hg", "clone", "https://bitbucket.org/pypy/example-interpreter", "kermit", cwd=tmp)
+        self.test_tmp = tmp
+        super(BaseVMProfPyPyTest, self).setup_class(self)
+
     def test_run_vm_and_upload(self, drivers):
         out, err, retcode = self.vmprof_exec("testvmprof/test/examples/simple_loop.py",
                                 jitlog=True, web=True)
@@ -51,6 +62,12 @@ class BaseVMProfPyPyTest(VMProfPyPyTest):
 
             names = [elem.text for elem in query(dri, '.media .vm-name')]
             assert names[0] == 'pypy'
+
+    #def test_run_moderatly_sized_log(self, drivers):
+    #    tmp = self.test_tmp
+    #    self.jitlog_exec(join(tmp,"pypy/rpython/bin/rpython"),
+    #                     "--annotate", join(tmp,"kermit/targetkermit.py"),
+    #                     "--web", env={'PYTHONPATH':join(tmp,'pypy')})
 
 class BaseVMProfCPythonTest(VMProfCPythonTest):
     def test_display_interp_cpython(self, drivers):

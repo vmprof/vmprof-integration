@@ -165,7 +165,7 @@ class TestTracesView(object):
 
     def test_sort_traces(self, drivers):
         for dri in drivers:
-            dri.get(local_url("#/sorting-v2/traces"))
+            dri.get(local_url("#/sortingv2/traces"))
             dri.wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
 
             def extract_names():
@@ -189,7 +189,7 @@ class TestTracesView(object):
 
     def test_error_loading_nonexistent_trace(self, drivers):
         for dri in drivers:
-            dri.get(local_url("#/non-existent-trace/traces"))
+            dri.get(local_url("#/nonexistenttrace/traces"))
             dri.wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
 
             assert query1(dri, '#error').is_displayed()

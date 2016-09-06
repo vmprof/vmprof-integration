@@ -18,15 +18,16 @@ class VMProfTest(object):
                                self.tmp + "/" + self.interpname + "-env/bin/activate_this.py",
                                "vmprof", "--", *params, *args, cwd=cwd)
 
-    def shell_exec(self, *args, cwd=None):
+    def shell_exec(self, *args, cwd=None, env={}):
         if cwd == None:
             cwd = os.getcwd()
         print("shexe> %s (pwd: %s)" % (' '.join(args), os.getcwd()))
         proc = subprocess.Popen(args, cwd=cwd,
                                 stderr=subprocess.PIPE,
-                                stdout=subprocess.PIPE)
+                                stdout=subprocess.PIPE,
+                                env=env)
         try:
-            outs, err = proc.communicate(timeout=30)
+            outs, err = proc.communicate(timeout=60)
         except subprocess.TimeoutExpired:
             proc.kill()
             raise AssertionError("command: %s. failed %d" % \
@@ -52,7 +53,7 @@ class VMProfPyPyTest(VMProfTest):
         self.interpname = 'pypy'
         self.vmprofargs = "--web --web-url %s" % self.vmprof_url
 
-    def jitlog_exec(self, *args, cwd=None, web=False, upload=None, output=None):
+    def jitlog_exec(self, *args, cwd=None, web=False, upload=None, output=None, env={}):
         script = args[0] 
         params = []
         if web:
@@ -63,7 +64,7 @@ class VMProfPyPyTest(VMProfTest):
             params += ['--upload', '--web-url', self.vmprof_url]
         return self.shell_exec(self.interp, "testvmprof/test/examples/boot_env.py" ,
                                self.tmp + "/" + self.interpname + "-env/bin/activate_this.py",
-                               "jitlog", "--", *params, *args, cwd=cwd)
+                               "jitlog", "--", *params, *args, cwd=cwd, env=env)
 
 def setup_local_cpython():
     tmp = tempfile.mkdtemp()

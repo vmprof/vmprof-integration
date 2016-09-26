@@ -37,7 +37,7 @@ before_script:
   - cd ..
 
 script:
-  - py.test testvmprof -v
+  - py.test testvmprof -v -s
 
 notifications:
   irc:

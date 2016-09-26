@@ -79,7 +79,10 @@ def setup_local_pypy(branch='trunk', version='latest', dist='linux64'):
     filename = "pypy.tar.bz2"
     tmp = tempfile.mkdtemp()
     if "TEST_PYPY_EXEC" not in os.environ:
-        download_pypy(os.path.join(tmp, filename), branch, version, dist)
+        if "TEST_PYPY_DOWNLOADED" in os.environ:
+            shutil.copy(os.environ["TEST_PYPY_DOWNLOADED"], os.path.join(tmp, filename))
+        else:
+            download_pypy(os.path.join(tmp, filename), branch, version, dist)
         subprocess.run(["tar", "xf", os.path.join(tmp, filename)], cwd=tmp)
         executable = None
         found = False

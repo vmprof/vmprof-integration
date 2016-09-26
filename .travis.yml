@@ -7,11 +7,12 @@ python:
 addons:
   apt:
     packages:
-      - python-virtualenv
       - firefox
       - mercurial
 
 install:
+  - pip install virtualenv --upgrade
+  - pip install setuptools --upgrade
   - echo "virtualenv version ... $(virtualenv --version)"
   - echo "python version ... $(python -V)"
   - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb

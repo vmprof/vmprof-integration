@@ -42,6 +42,18 @@ class TestTracesView(object):
             assert len(driver.find_elements_by_css_selector('li.trace-entry')) == 0
             reset_search_criteria(driver)
 
+    def test_result_variable_displayed(self, drivers):
+        for driver in drivers:
+            wait = ui.WebDriverWait(driver,20)
+            driver.get(local_url("#/1v1/traces"))
+            wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
+            select_trace_entry(driver, wait, "funcname1")
+            query1(driver, "#switch_trace_opt").click()
+            for line in query(driver, ".resops > .trace-line"):
+                name = query1(line, ".resop-name").text.strip()
+                if name == 'int_add':
+                    assert query1(line, ".result").text.strip() != ""
+
     def test_search_traces(self, drivers):
         for driver in drivers:
             wait = ui.WebDriverWait(driver,20)

@@ -7,8 +7,8 @@ import os
 @pytest.fixture(scope="function")
 def drivers(request):
     drivers = [webdriver.Chrome()]
-    if os.environ.get('TRAVIS', 'false') == 'true':
-        drivers += [webdriver.Firefox()]
+    #if os.environ.get('TRAVIS', 'false') == 'true':
+    #    drivers += [webdriver.Firefox()]
     for dri in drivers:
         dri.wait = ui.WebDriverWait(dri,10)
         request.addfinalizer(dri.quit)

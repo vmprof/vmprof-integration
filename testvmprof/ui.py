@@ -2,7 +2,6 @@
 import pytest
 from selenium import webdriver
 import selenium.webdriver.support.ui as ui
-import os
 
 @pytest.fixture(scope="function")
 def drivers(request):

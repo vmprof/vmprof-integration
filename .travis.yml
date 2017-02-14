@@ -7,8 +7,9 @@ python:
 addons:
   apt:
     packages:
-      - firefox
       - mercurial
+      - python-dev
+      - libunwind8-dev
 
 install:
   - pip install virtualenv --upgrade

@@ -13,6 +13,9 @@ addons:
 
 install:
   - bash ci/install.sh
+  - cd vmprof-server
+  - python manage.py runserver -v 3 &
+  - sleep 3
 
 before_install:
   - export CHROME_BIN=/usr/bin/google-chrome
@@ -20,8 +23,6 @@ before_install:
   - sh -e /etc/init.d/xvfb start
 
 script:
-  - python vmprof-server/manage.py runserver -v 3 &
-  - sleep 3
   - bash ci/test.sh
 
 notifications:

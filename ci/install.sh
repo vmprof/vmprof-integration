@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+set -e
+
 pip install virtualenv --upgrade
 pip install setuptools --upgrade
 echo "virtualenv version ... $(virtualenv --version)"
@@ -19,4 +21,3 @@ pip install -r requirements/testing.txt
 python manage.py migrate
 python vmlog/test/data/loggen.py
 python manage.py loaddata vmlog/test/fixtures.yaml
-

@@ -57,7 +57,7 @@ class BaseVMProfPyPyTest(VMProfPyPyTest):
             dri.get(local_url("#"))
             dri.wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
 
-            names = [elem.text for elem in query(dri, '.media .vm-name')]
+            names = [elem.text for elem in query(dri, '.vm-name')]
             assert names[0] == 'pypy'
 
     #def test_run_moderatly_sized_log(self, drivers):

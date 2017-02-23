@@ -14,7 +14,14 @@ addons:
 install:
   - bash ci/install.sh
 
+before_install:
+  - export CHROME_BIN=/usr/bin/google-chrome
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+
 script:
+  - python manage.py runserver -v 3 &
+  - sleep 3
   - bash ci/test.sh
 
 notifications:

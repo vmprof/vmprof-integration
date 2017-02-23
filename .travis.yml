@@ -23,7 +23,7 @@ before_install:
   - sh -e /etc/init.d/xvfb start
 
 script:
-  - bash ci/test.sh
+  - py.test testvmprof -v -s
 
 notifications:
   irc:

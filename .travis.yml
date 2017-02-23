@@ -20,7 +20,7 @@ before_install:
   - sh -e /etc/init.d/xvfb start
 
 script:
-  - python manage.py runserver -v 3 &
+  - python vmprof-server/manage.py runserver -v 3 &
   - sleep 3
   - bash ci/test.sh
 

@@ -21,3 +21,4 @@ pip install -r requirements/testing.txt
 python manage.py migrate
 python vmlog/test/data/loggen.py
 python manage.py loaddata vmlog/test/fixtures.yaml
+cd ..

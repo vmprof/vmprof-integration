@@ -12,10 +12,12 @@ addons:
       - libunwind8-dev
 
 install:
+  - pushd .
   - bash ci/install.sh
   - cd vmprof-server
   - python manage.py runserver -v 3 &
   - sleep 3
+  - popd
 
 before_install:
   - export CHROME_BIN=/usr/bin/google-chrome

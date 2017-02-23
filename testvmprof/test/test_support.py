@@ -7,13 +7,15 @@ def test_output_extract_urls_empty():
 
 def test_output_extract_urls():
     output = """2500
-Compiling and uploading to http://vmprof.com...
-VMProf log: http://vmprof.com/#/6e966f8bd1498571bbf48202c7edd72e
-PyPy JIT log: http://vmprof.com/#/b3a936d8a24006b3fdbf805cb5defc11/traces
-mem.c: 32 mallocs left (use PYPY_ALLOC=1 to see the list)
+Uploading to http://localhost:8000...
+ => Uploading the cpu profile...
+      http://localhost:8000/#/22035e02-2c9b-4927-bde4-d458cec099d4
+ => Uploading the jit log...
+      http://localhost:8000/#/f79d0e1b-cbae-410f-bd06-8f650770af24/traces
+mem.c: 21 mallocs left (use PYPY_ALLOC=1 to see the list)\n
 """
     urls = output_extract_urls(output)
     assert urls == {
-        "profile": "http://vmprof.com/#/6e966f8bd1498571bbf48202c7edd72e",
-        "jitlog": "http://vmprof.com/#/b3a936d8a24006b3fdbf805cb5defc11/traces"
+            "cpu": "http://localhost:8000/#/22035e02-2c9b-4927-bde4-d458cec099d4",
+            "jit": "http://localhost:8000/#/f79d0e1b-cbae-410f-bd06-8f650770af24/traces"
     }

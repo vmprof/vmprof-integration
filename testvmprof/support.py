@@ -3,6 +3,7 @@ import shutil
 import tempfile
 import subprocess
 import os
+import re
 
 class VMProfTest(object):
     def vmprof_exec(self, *args, cwd=None, jitlog=False, web=False, output=None):
@@ -88,7 +89,7 @@ def setup_local_pypy(branch='trunk', version='latest', dist='linux64'):
         found = False
         for root, dirs, files in os.walk(tmp):
             for dir in dirs:
-                if dir.startswith("pypy-c"):
+                if dir.startswith("pypy-"):
                     executable = os.path.join(dir, "bin", "pypy")
                     found = True
                     break
@@ -99,7 +100,8 @@ def setup_local_pypy(branch='trunk', version='latest', dist='linux64'):
         absexe = executable = os.environ["TEST_PYPY_EXEC"]
     # poor man's dependency resolution
     subprocess.run(["virtualenv", "-p", absexe, "pypy-env"], cwd=tmp)
-    subprocess.run(["pypy-env/bin/pip", "install", "--no-cache-dir", "--pre", "vmprof"], cwd=tmp)
+    subprocess.run(["pypy-env/bin/pip", "install", "--no-cache-dir",
+                    "git+https://github.com/vmprof/vmprof-python.git"], cwd=tmp)
     return tmp, os.path.join("pypy-env","bin","python")
 
 def download_pypy(path, branch, version, dist):
@@ -116,10 +118,15 @@ def download_pypy(path, branch, version, dist):
 
 def output_extract_urls(output):
     found = {}
+    last_type = None
+    typematch = re.compile(" => Uploading the ([a-z]+) ")
     for line in output.splitlines():
-        if line.startswith("VMProf log: "):
-            found['profile'] = line[12:]
-        if line.startswith("PyPy JIT log: "):
-            found['jitlog'] = line[14:]
+        match = typematch.search(line)
+        if match:
+            last_type = match.group(1)
+            continue
+        if last_type is not None:
+            found[last_type] = line.strip()
+            last_type = None
     return found
 

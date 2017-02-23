@@ -32,9 +32,6 @@ class BaseVMProfPyPyTest(VMProfPyPyTest):
 
     def setup_class(self):
         tmp = tempfile.mkdtemp()
-        self.shell_exec(None, "wget", "https://bitbucket.org/pypy/pypy/get/default.tar.bz2", cwd=tmp)
-        self.shell_exec(None, "tar", "xf", "default.tar.bz2", cwd=tmp)
-        self.shell_exec(None, "hg", "clone", "https://bitbucket.org/pypy/example-interpreter", "kermit", cwd=tmp)
         self.test_tmp = tmp
         super(BaseVMProfPyPyTest, self).setup_class(self)
 
@@ -42,7 +39,7 @@ class BaseVMProfPyPyTest(VMProfPyPyTest):
         out, err, retcode = self.vmprof_exec("testvmprof/test/examples/simple_loop.py",
                                 jitlog=True, web=True)
         print(out,"\n",err)
-        url = output_extract_urls(err.decode())['jitlog']
+        url = output_extract_urls(err.decode())['jit']
         examine_simple_loop(drivers, url)
 
 
@@ -51,7 +48,7 @@ class BaseVMProfPyPyTest(VMProfPyPyTest):
         out, err, retcode = self.jitlog_exec("testvmprof/test/examples/simple_loop.py",
                                              output=str(file))
         out, err, retcode = self.jitlog_exec(str(file), upload=True)
-        url = output_extract_urls(err.decode())['jitlog']
+        url = output_extract_urls(err.decode())['jit']
         examine_simple_loop(drivers, url)
 
     def test_display_interp_pypy(self, drivers):
@@ -64,6 +61,9 @@ class BaseVMProfPyPyTest(VMProfPyPyTest):
             assert names[0] == 'pypy'
 
     #def test_run_moderatly_sized_log(self, drivers):
+    #self.shell_exec(None, "wget", "https://bitbucket.org/pypy/pypy/get/default.tar.bz2", cwd=tmp)
+    #self.shell_exec(None, "tar", "xf", "default.tar.bz2", cwd=tmp)
+    #self.shell_exec(None, "hg", "clone", "https://bitbucket.org/pypy/example-interpreter", "kermit", cwd=tmp)
     #    tmp = self.test_tmp
     #    self.jitlog_exec(join(tmp,"pypy/rpython/bin/rpython"),
     #                     "--annotate", join(tmp,"kermit/targetkermit.py"),

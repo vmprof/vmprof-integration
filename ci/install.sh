@@ -20,5 +20,3 @@ python manage.py migrate
 python vmlog/test/data/loggen.py
 python manage.py loaddata vmlog/test/fixtures.yaml
 
-python manage.py runserver -v 3 &
-sleep 3 # wait for django

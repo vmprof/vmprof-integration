@@ -58,7 +58,7 @@ class BaseVMProfPyPyTest(VMProfPyPyTest):
             dri.wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
 
             names = [elem.text for elem in query(dri, '.vm-name')]
-            assert names[0] == 'pypy'
+            assert names[0].lower() == 'pypy'
 
     #def test_run_moderatly_sized_log(self, drivers):
     #self.shell_exec(None, "wget", "https://bitbucket.org/pypy/pypy/get/default.tar.bz2", cwd=tmp)
@@ -76,8 +76,8 @@ class BaseVMProfCPythonTest(VMProfCPythonTest):
             dri.get(local_url("#"))
             dri.wait.until(lambda d: not query1(d, '#loading_img').is_displayed())
 
-            names = [elem.text for elem in query(dri, '.media .vm-name')]
-            assert names[0] == 'cpython'
+            names = [elem.text for elem in query(dri, '.vm-name')]
+            assert names[0].lower() == 'cpython'
 
 #class TestProduction(VMProfTest):
 #    vmprof_url = "http://vmprof.com"

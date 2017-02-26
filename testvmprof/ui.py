@@ -9,7 +9,7 @@ def drivers(request):
     #if os.environ.get('TRAVIS', 'false') == 'true':
     #    drivers += [webdriver.Firefox()]
     for dri in drivers:
-        dri.wait = ui.WebDriverWait(dri,10)
+        dri.wait = ui.WebDriverWait(dri, 2)
         request.addfinalizer(dri.quit)
     return drivers
 

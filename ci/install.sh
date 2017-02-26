@@ -16,9 +16,10 @@ wget https://chromedriver.storage.googleapis.com/2.27/chromedriver_linux64.zip
 unzip chromedriver_linux64.zip
 sudo mv chromedriver /usr/bin
 git clone --depth 1 git://github.com/vmprof/vmprof-server.git
+pushd .
 cd vmprof-server
 pip install -r requirements/testing.txt
 python manage.py migrate
 python vmlog/test/data/loggen.py
 python manage.py loaddata vmlog/test/fixtures.yaml
-cd ..
+popd
